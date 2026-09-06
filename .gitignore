@@ -1,0 +1,178 @@
+# ============================================================
+# Unreal Engine 5.8 + JetBrains Rider
+# ============================================================
+
+# ------------------------------------------------------------
+# Unreal Engine Generated Files
+# ------------------------------------------------------------
+
+# Compiled binaries
+Binaries/
+
+# Intermediate build files
+Intermediate/
+
+# Derived Data Cache
+DerivedDataCache/
+
+# Saved files: logs, autosaves, crashes, local config, etc.
+Saved/
+
+# Local builds / packaged builds
+Builds/
+
+# ------------------------------------------------------------
+# Unreal Engine Project Generated Files
+# ------------------------------------------------------------
+
+# Visual Studio / IDE generated project files
+*.sln
+*.suo
+*.sdf
+*.opensdf
+*.VC.db
+*.VC.opendb
+
+# VS Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+
+# ------------------------------------------------------------
+# JetBrains Rider
+# ------------------------------------------------------------
+
+.idea/
+
+# Rider generated files
+*.sln.DotSettings.user
+
+# JetBrains cache / workspace files
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries/
+.idea/**/shelf/
+
+# ------------------------------------------------------------
+# Unreal Engine User / Temporary Files
+# ------------------------------------------------------------
+
+# Crash reports
+crashinfo--*
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+
+# Unreal autosave / backup
+Autosaves/
+Backup/
+
+# ------------------------------------------------------------
+# Operating System Files
+# ------------------------------------------------------------
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# ------------------------------------------------------------
+# Build / Compiler Files
+# ------------------------------------------------------------
+
+# C/C++ object files
+*.obj
+*.o
+*.lo
+
+# Precompiled headers
+*.pch
+*.gch
+
+# Libraries
+*.lib
+*.a
+
+# Dynamic libraries
+*.dll
+*.so
+*.dylib
+
+# Executables
+*.exe
+
+# Debug symbols
+*.pdb
+*.ilk
+*.exp
+
+# ------------------------------------------------------------
+# Unreal Build Tool
+# ------------------------------------------------------------
+
+# Generated makefiles
+Makefile
+CMakeLists.txt
+
+# Unreal generated files
+*.target
+*.modules
+
+# ------------------------------------------------------------
+# Plugin Generated Files
+# ------------------------------------------------------------
+
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+Plugins/*/DerivedDataCache/
+Plugins/*/Saved/
+
+# ------------------------------------------------------------
+# Local / User Settings
+# ------------------------------------------------------------
+
+*.user
+*.userprefs
+*.rsuser
+*.sln.docstates
+
+# ------------------------------------------------------------
+# Optional build artifacts
+# ------------------------------------------------------------
+
+StagedBuilds/
+Packaging/
+
+# ------------------------------------------------------------
+# KEEP these Unreal project folders/files
+# ------------------------------------------------------------
+
+# Do NOT ignore:
+#
+# Config/
+# Content/
+# Source/
+# Plugins/
+# *.uproject
+#
+# These should normally be committed to Git.
