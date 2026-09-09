@@ -17,10 +17,9 @@ class AUECRPGGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-
 	/** Constructor */
 	AUECRPGGameMode();
+
+protected:
+	virtual void BeginPlay() override;
 };
-
-
-
