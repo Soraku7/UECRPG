@@ -23,7 +23,7 @@ void UUIBase::DoLoad()
 {
 	bIsShow = true;
 	bIsClose = false;
-	SetVisibility(ESlateVisibility::HitTestInvisible);
+	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 	if (CloseTimerHandle.IsValid())
 	{
