@@ -3,6 +3,7 @@
 
 #include "Public/UI/GameUI.h"
 
+#include "Public/Function/GlobalFunc.h"
 #include "Public/SubSystem/UISystem.h"
 #include "Public/UI/Inventory/InventoryUI.h"
 #include "Runtime/UMG/Public/Components/Button.h"
@@ -16,7 +17,7 @@ void UGameUI::BindDelegates()
 {
 	Super::BindDelegates();
 
-	InventoryButton->OnClicked.AddDynamic(this , &UGameUI::ToggleInventory);
+	InventoryButton->OnClicked.AddDynamic(this, &UGameUI::ToggleInventory);
 }
 
 void UGameUI::UnBindDelegates()
@@ -27,5 +28,5 @@ void UGameUI::UnBindDelegates()
 
 void UGameUI::ToggleInventory()
 {
-	GEngine->GameViewport->GetWorld()->GetGameInstance()->GetSubsystem<UUISystem>()->ToggleUI<UInventoryUI>();
+	UGlobalFunc::GetSubsystem<UUISystem>()->ToggleUI<UInventoryUI>();
 }

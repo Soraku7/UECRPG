@@ -3,7 +3,9 @@
 
 #include "Public/UI/UIBase.h"
 
+#include "Public/Function/GlobalFunc.h"
 #include "Public/SubSystem/UISystem.h"
+#include "Public/UI/GameUI.h"
 
 void UUIBase::NativeOnInitialized()
 {
@@ -50,7 +52,7 @@ void UUIBase::DoClose(const float CloseTime)
 void UUIBase::CloseEvent()
 {
 	UnBindDelegates();
-	GEngine->GameViewport->GetWorld()->GetGameInstance()->GetSubsystem<UUISystem>()->RemoveFromList(this);
+	UGlobalFunc::GetSubsystem<UUISystem>()->RemoveFromList(this);
 	RemoveFromParent();
 }
 

@@ -2,6 +2,7 @@
 
 #include "UECRPGGameMode.h"
 
+#include "Public/Function/GlobalFunc.h"
 #include "Public/SubSystem/UISystem.h"
 #include "Public/UI/GameUI.h"
 
@@ -14,5 +15,5 @@ void AUECRPGGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GEngine->GameViewport->GetWorld()->GetGameInstance()->GetSubsystem<UUISystem>()->LoadUI<UGameUI>();
+	UGlobalFunc::GetSubsystem<UUISystem>()->LoadUI<UGameUI>();
 }

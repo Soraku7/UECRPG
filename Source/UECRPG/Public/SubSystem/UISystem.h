@@ -39,7 +39,6 @@ public:
 
 		const FString Path = FString::Printf(
 			TEXT("/Script/Engine.Blueprint'/Game/Widget/WBP_%s.WBP_%s_C'"), *WidgetName, *WidgetName);
-		UE_LOG(LogTemp, Warning, TEXT("新建UI%s"), *WidgetName);
 
 		UClass* WidgetClass = LoadClass<UUIBase>(nullptr, *Path);
 		if (WidgetClass)
@@ -98,5 +97,75 @@ public:
 	void RemoveFromList(UUIBase* UI)
 	{
 		UIList.Remove(UI);
+	}
+	
+	template <typename WidgetT = UUIBase>
+	void CloseUI()
+	{
+		WidgetT* UI = GetUI<WidgetT>();
+		if (IsValid(UI))
+		{
+			if (!UI->bIsClose)
+			{
+				UI->DoClose();
+			}
+		}
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UUIBase* LoadUI(const TSubclassOf<UUIBase> WidgetClass)
+	{
+		UUIBase* InListUI = GetUI(WidgetClass);
+		if (IsValid(InListUI))
+		{
+			if (InListUI->bIsClose)
+			{
+				InListUI->DoLoad();
+			}
+			return InListUI;
+		}
+
+		if (WidgetClass)
+		{
+			if (UUIBase* UI = Cast<UUIBase>(CreateWidget<UUserWidget>(GetWorld(), WidgetClass)))
+			{
+				UI->AddToViewport(UI->ZOrder);
+				UI->DoLoad();
+				UIList.Add(UI);
+				return UI;
+			}
+			return nullptr;
+		}
+		return nullptr;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UUIBase* GetUI(const TSubclassOf<UUIBase> WidgetClass)
+	{
+		UClass* ParentClass = GetParentNativeClass(WidgetClass);
+		const TObjectPtr<UUIBase>* FoundUIClass = UIList.FindByPredicate([ParentClass](const UUIBase* UIClass)
+		{
+			return GetParentNativeClass(UIClass->GetClass()) == ParentClass;
+		});
+		if (FoundUIClass)
+		{
+			UUIBase* UI = Cast<UUIBase>(*FoundUIClass);
+			return UI;
+		}
+
+		return nullptr;
+	}
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void CloseUI(const TSubclassOf<UUIBase> WidgetClass)
+	{
+		UUIBase* UI = GetUI(WidgetClass);
+		if (IsValid(UI))
+		{
+			if (!UI->bIsClose)
+			{
+				UI->DoClose();
+			}
+		}
 	}
 };
