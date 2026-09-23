@@ -13,4 +13,15 @@ UCLASS()
 class UECRPG_API UItemObject : public UObject
 {
 	GENERATED_BODY()
+
+protected:
+	int32 ID;
+	
+public:
+	int32 Num;
+	
+	UFUNCTION(BlueprintCallable , Category = "Inventory")
+	FORCEINLINE int32 GetItemID() const { return ID; }
+	
+	bool operator==(const UItemObject& Other) const { return ID == Other.ID; }
 };
