@@ -43,4 +43,20 @@ struct FItemData : public FTableRowBase
 	              Weight(0), BuyPrice(0), SellPrice(0), bIsStackable(false), maxStack(0)
 	{
 	}
+	
+	static FItemData Set(const FItemData& InItemData)
+	{
+		FItemData Item;
+		Item.Name = InItemData.Name;
+		Item.Description = InItemData.Description;
+		Item.Icon = InItemData.Icon;
+		Item.ItemType = InItemData.ItemType;
+		Item.ItemQuality = InItemData.ItemQuality;
+		Item.Weight = InItemData.Weight;
+		Item.BuyPrice = InItemData.BuyPrice;
+		Item.SellPrice = InItemData.SellPrice;
+		Item.bIsStackable = InItemData.bIsStackable;
+		Item.maxStack = InItemData.maxStack;
+		return Item;
+	}
 };

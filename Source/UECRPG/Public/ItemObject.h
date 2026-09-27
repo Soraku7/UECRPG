@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/ItemDataStruct.h"
 #include "UObject/Object.h"
 #include "ItemObject.generated.h"
 
@@ -17,11 +18,18 @@ class UECRPG_API UItemObject : public UObject
 protected:
 	int32 ID;
 	
+	FItemData Data;
+	
 public:
 	int32 Num;
 	
+	virtual void Initialized(const int32 ItemID , const FItemData& InItemData);
+	
 	UFUNCTION(BlueprintCallable , Category = "Inventory")
 	FORCEINLINE int32 GetItemID() const { return ID; }
+	
+	UFUNCTION(BlueprintCallable , Category = "Inventory")
+	FORCEINLINE FItemData GetData() const { return Data; }
 	
 	bool operator==(const UItemObject& Other) const { return ID == Other.ID; }
 };
