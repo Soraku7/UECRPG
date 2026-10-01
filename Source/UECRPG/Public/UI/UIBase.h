@@ -14,9 +14,7 @@ class UECRPG_API UUIBase : public UUserWidget
 {
 	GENERATED_BODY()
 
-protected:
-	bool bIsShow;
-
+private:
 	FTimerDelegate CloseTimerDelegate;
 
 	FTimerHandle CloseTimerHandle;
@@ -37,12 +35,12 @@ protected:
 public:
 	virtual void DoLoad();
 
-	virtual void DoUnLoad();
+	virtual void DoUnload();
 
 	virtual void DoClose(const float CloseTime = 5.f);
-	
+
 	virtual void CloseEvent();
-	
+
 	UFUNCTION()
 	virtual void DoCloseAction();
 };

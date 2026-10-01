@@ -23,7 +23,6 @@ void UUIBase::UnBindDelegates()
 
 void UUIBase::DoLoad()
 {
-	bIsShow = true;
 	bIsClose = false;
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
@@ -35,14 +34,13 @@ void UUIBase::DoLoad()
 	}
 }
 
-void UUIBase::DoUnLoad()
+void UUIBase::DoUnload()
 {
-	bIsShow = false;
 }
 
 void UUIBase::DoClose(const float CloseTime)
 {
-	DoUnLoad();
+	DoUnload();
 	bIsClose = true;
 	SetVisibility(ESlateVisibility::Collapsed);
 	CloseTimerDelegate.BindUObject(this, &UUIBase::CloseEvent);

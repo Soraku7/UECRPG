@@ -37,10 +37,10 @@ struct FItemData : public FTableRowBase
 	bool bIsStackable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Max Stack")
-	int maxStack;
+	int MaxStack;
 
 	FItemData() : Name(""), Description(""), Icon(nullptr), ItemType(EItemType::All), ItemQuality(EItemQuality::Poor),
-	              Weight(0), BuyPrice(0), SellPrice(0), bIsStackable(false), maxStack(0)
+	              Weight(0), BuyPrice(0), SellPrice(0), bIsStackable(false), MaxStack(0)
 	{
 	}
 	
@@ -56,7 +56,7 @@ struct FItemData : public FTableRowBase
 		Item.BuyPrice = InItemData.BuyPrice;
 		Item.SellPrice = InItemData.SellPrice;
 		Item.bIsStackable = InItemData.bIsStackable;
-		Item.maxStack = InItemData.maxStack;
+		Item.MaxStack = InItemData.MaxStack;
 		return Item;
 	}
 };

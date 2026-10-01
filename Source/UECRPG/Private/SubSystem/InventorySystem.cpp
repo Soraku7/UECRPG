@@ -32,6 +32,16 @@ TArray<UItemObject*> UInventorySystem::GetAllItems()
 	return AllItems;
 }
 
+TArray<UItemObject*> UInventorySystem::GetItemsByType(const EItemType ItemType)
+{
+	if (ItemType == EItemType::All)
+	{
+		return GetAllItems();
+	}
+	
+	return Inventory.FindRef(ItemType).ItemArray;
+}
+
 UItemObject* UInventorySystem::AddItem(const int32 ItemID, const int32 Num, const bool bAutoBroadCast)
 {
 	const auto ItemData = GetItemData(ItemID);
@@ -58,18 +68,19 @@ UItemObject* UInventorySystem::AddItem(const int32 ItemID, const int32 Num, cons
 	{
 		const auto CurItemRef = *CurItem;
 		CurItemRef->Num += Num;
-		UE_LOG(LogTemp, Warning, TEXT("CurItemRef->Name : %s Num : %d"), *CurItemRef->GetData().Name, CurItemRef->Num);
 
 		if (CurItemRef->Num <= 0)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("当前物品数量小于0 : %s Num : %d"), *CurItemRef->GetData().Name, CurItemRef->Num);
-
 			CurTypeItems.ItemArray.Remove(CurItemRef);
 			Inventory.Add(ItemType, CurTypeItems);
 		}
 
 		if (bAutoBroadCast)
 		{
+			if (OnItemChangeDelegate.IsBound())
+			{
+				OnItemChangeDelegate.Broadcast(ItemID);
+			}
 		}
 		return CurItemRef;
 	}
@@ -77,14 +88,20 @@ UItemObject* UInventorySystem::AddItem(const int32 ItemID, const int32 Num, cons
 	if (Num > 0)
 	{
 		const auto NewItem = CreateItem(ItemID);
+		if (!IsValid(NewItem))
+			return nullptr;
+
 		NewItem->Num = Num;
-		UE_LOG(LogTemp, Warning, TEXT("背包无当前物品 : %s Num : %d"), *NewItem->GetData().Name, NewItem->Num);
 
 		CurTypeItems.ItemArray.Add(NewItem);
 		Inventory.Add(ItemType, CurTypeItems);
 
 		if (bAutoBroadCast)
 		{
+			if (OnItemChangeDelegate.IsBound())
+			{
+				OnItemChangeDelegate.Broadcast(ItemID);
+			}
 		}
 
 		return NewItem;

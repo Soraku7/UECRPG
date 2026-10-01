@@ -6,6 +6,8 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "InventorySystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemChangeSignature, const int32, ItemID);
+
 struct FItemData;
 class UItemObject;
 enum class EItemType : uint8;
@@ -35,25 +37,32 @@ protected:
 	TObjectPtr<UDataTable> ItemDataTable;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FItemChangeSignature OnItemChangeDelegate;
+
+public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TArray<UItemObject*> GetAllItems();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UItemObject* AddItem(const int32 ItemID , const int32 Num = 1 , const bool bAutoBroadCast = true);
-	
+	TArray<UItemObject*> GetItemsByType(const EItemType ItemType);
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UItemObject* ReduceItem(const int32 ItemID , const int32 Num = 1, const bool bAutoBroadCast = true);
-	
+	UItemObject* AddItem(const int32 ItemID, const int32 Num = 1, const bool bAutoBroadCast = true);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UItemObject* ReduceItem(const int32 ItemID, const int32 Num = 1, const bool bAutoBroadCast = true);
+
 	FItemData* GetItemData(const int32 ItemID) const;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* GetItem(const int32 ItemID) const;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	int32 GetItemNum(const int32 ItemID) const;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* CreateItem(const int32 ItemID);
 };
