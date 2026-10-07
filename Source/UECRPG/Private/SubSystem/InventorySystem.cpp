@@ -3,8 +3,8 @@
 
 #include "Public/SubSystem/InventorySystem.h"
 
-#include "ItemObject.h"
 #include "Data/ItemDataStruct.h"
+#include "UI/Item/ItemObject.h"
 
 FTypeItemHolder::FTypeItemHolder()
 {

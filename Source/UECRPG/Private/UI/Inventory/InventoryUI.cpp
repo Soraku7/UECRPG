@@ -3,17 +3,18 @@
 
 #include "Public/UI/Inventory/InventoryUI.h"
 
-#include "ItemObject.h"
+
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
 #include "Data/GlobalEnum.h"
 #include "Function/GlobalFunc.h"
 #include "SubSystem/InventorySystem.h"
-#include "UI/Inventory/InventorySlot.h""
+#include "UI/Inventory/InventorySlot.h"
+#include "UI/Item/ItemObject.h"
 
 void UInventoryUI::NativeOnInitialized()
 {
-	for (int i = 0; i < 20; i++)
+	for (uint8 i = 0; i < 20; i++)
 	{
 		AddSlot();
 	}
@@ -42,6 +43,11 @@ void UInventoryUI::DoLoad()
 	RefreshData();
 }
 
+void UInventoryUI::DoUnload()
+{
+	Super::DoUnload();
+}
+
 void UInventoryUI::RefreshData()
 {
 	uint8 Index = 0;
@@ -50,7 +56,7 @@ void UInventoryUI::RefreshData()
 		if (Item->GetData().bIsStackable)
 		{
 			const bool bTotalDivided = Item->Num % Item->GetData().MaxStack == 0;
-			const uint8 SlotNeed = Item->Num / Item->GetData().MaxStack;
+			const uint8 SlotNeed = Item->Num / Item->GetData().MaxStack + (bTotalDivided ? 0 : 1);
 			for (uint8 i = 0; i < SlotNeed; i++)
 			{
 				const uint8 ShowNum = (i < SlotNeed - 1 || bTotalDivided)
@@ -91,7 +97,7 @@ void UInventoryUI::AddSlot()
 {
 	const auto ItemSlot = CreateWidget<UInventorySlot>(this, UInventorySlotClass);
 	InventoryPanel->AddChild(ItemSlot);
-	ItemSlot->RefreshData();
+	ItemSlot->RefreshData(nullptr);
 	ItemSlot->SetParent(this);
 	SlotItems.Add(ItemSlot);
 }

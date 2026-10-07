@@ -25,10 +25,8 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> NumText;
 
-	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UItemObject> Item;
 
-	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UUIBase> ParentUI;
 
 	int32 ItemNum;
