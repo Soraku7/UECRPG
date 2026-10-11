@@ -17,7 +17,7 @@ class UECRPG_API UUniversalToggle : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UButton> Btn;
 
 	UPROPERTY(EditDefaultsOnly, meta = (BindWidget))
