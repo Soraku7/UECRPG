@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemTypeToggle.h"
 #include "Public/UI/UIBase.h"
 #include "InventoryUI.generated.h"
 
+class UUniversalToggle;
+class UItemTypeToggle;
 enum class EItemType : uint8;
 class UButton;
 class UWrapBox;
@@ -22,14 +25,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UInventorySlot> UInventorySlotClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UItemTypeToggle> UItemTypeToggleClass;
+
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UWrapBox> InventoryPanel;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UWrapBox> ItemTypePanel;
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UButton> CloseBtn;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UInventorySlot>> SlotItems;
+
+	UPROPERTY()
+	TMap<EItemType, TObjectPtr<UItemTypeToggle>> ItemTypeMap;
 
 	EItemType CurType;
 
@@ -50,6 +62,8 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnRefreshInventory(const int32 ItemID);
+
+	void OnToggleSelected(const UUniversalToggle* SelectToggle);
 
 	UFUNCTION()
 	virtual void AddSlot();
