@@ -3,8 +3,6 @@
 
 #include "UI/Universal/UniversalToggle.h"
 
-#include <wrl/event.h>
-
 #include "Runtime/UMG/Public/Components/Button.h"
 #include "Runtime/UMG/Public/Components/TextBlock.h"
 
