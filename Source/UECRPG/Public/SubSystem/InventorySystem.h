@@ -65,4 +65,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* CreateItem(const int32 ItemID);
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void DoItemChangeBroadcast();
 };

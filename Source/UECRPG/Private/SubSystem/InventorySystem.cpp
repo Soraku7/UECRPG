@@ -183,3 +183,11 @@ UItemObject* UInventorySystem::CreateItem(const int32 ItemID)
 	Item->Initialized(ItemID, *ItemData);
 	return Item;
 }
+
+void UInventorySystem::DoItemChangeBroadcast()
+{
+	if (OnItemChangeDelegate.IsBound())
+	{
+		OnItemChangeDelegate.Broadcast(0);
+	}
+}

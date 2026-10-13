@@ -43,7 +43,7 @@ struct FItemData : public FTableRowBase
 	              Weight(0), BuyPrice(0), SellPrice(0), bIsStackable(false), MaxStack(0)
 	{
 	}
-	
+
 	static FItemData Set(const FItemData& InItemData)
 	{
 		FItemData Item;
@@ -58,5 +58,21 @@ struct FItemData : public FTableRowBase
 		Item.bIsStackable = InItemData.bIsStackable;
 		Item.MaxStack = InItemData.MaxStack;
 		return Item;
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FItemPack
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemPack", DisplayName = "ID")
+	int32 ItemID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemPack", DisplayName = "Num")
+	int32 Num;
+
+	FItemPack() : ItemID(0), Num(0)
+	{
 	}
 };
