@@ -13,6 +13,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "UECRPG.h"
+#include "Function/GlobalFunc.h"
+#include "SubSystem/UISystem.h"
+#include "UI/Inventory/InventoryUI.h"
 
 AUECRPGPlayerController::AUECRPGPlayerController()
 {
@@ -38,7 +41,8 @@ void AUECRPGPlayerController::SetupInputComponent()
 	if (IsLocalPlayerController())
 	{
 		// Add Input Mapping Context
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
@@ -47,20 +51,34 @@ void AUECRPGPlayerController::SetupInputComponent()
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 		{
 			// Setup mouse input events
-			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this, &AUECRPGPlayerController::OnInputStarted);
-			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this, &AUECRPGPlayerController::OnSetDestinationTriggered);
-			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this, &AUECRPGPlayerController::OnSetDestinationReleased);
-			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this, &AUECRPGPlayerController::OnSetDestinationReleased);
+			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Started, this,
+			                                   &AUECRPGPlayerController::OnInputStarted);
+			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnSetDestinationTriggered);
+			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Completed, this,
+			                                   &AUECRPGPlayerController::OnSetDestinationReleased);
+			EnhancedInputComponent->BindAction(SetDestinationClickAction, ETriggerEvent::Canceled, this,
+			                                   &AUECRPGPlayerController::OnSetDestinationReleased);
 
 			// Setup touch input events
-			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this, &AUECRPGPlayerController::OnInputStarted);
-			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUECRPGPlayerController::OnTouchTriggered);
-			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUECRPGPlayerController::OnTouchReleased);
-			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUECRPGPlayerController::OnTouchReleased);
+			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Started, this,
+			                                   &AUECRPGPlayerController::OnInputStarted);
+			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnTouchTriggered);
+			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this,
+			                                   &AUECRPGPlayerController::OnTouchReleased);
+			EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this,
+			                                   &AUECRPGPlayerController::OnTouchReleased);
+
+			EnhancedInputComponent->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this,
+			                                   &AUECRPGPlayerController::OnInventoryToggled);
 		}
 		else
 		{
-			UE_LOG(LogUECRPG, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+			UE_LOG(LogUECRPG, Error,
+			       TEXT(
+				       "'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."
+			       ), *GetNameSafe(this));
 		}
 	}
 }
@@ -77,10 +95,10 @@ void AUECRPGPlayerController::OnSetDestinationTriggered()
 {
 	// We flag that the input is being pressed
 	FollowTime += GetWorld()->GetDeltaSeconds();
-	
+
 	// Update the move destination to wherever the cursor is pointing at
 	UpdateCachedDestination();
-	
+
 	// Move towards mouse pointer or touch
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
@@ -97,7 +115,8 @@ void AUECRPGPlayerController::OnSetDestinationReleased()
 	{
 		// We move there and spawn some particles
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator,
+		                                               FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}
 
 	FollowTime = 0.f;
@@ -114,6 +133,11 @@ void AUECRPGPlayerController::OnTouchReleased()
 {
 	bIsTouch = false;
 	OnSetDestinationReleased();
+}
+
+void AUECRPGPlayerController::OnInventoryToggled()
+{
+	UGlobalFunc::GetSubsystem<UUISystem>()->ToggleUI<UInventoryUI>();
 }
 
 void AUECRPGPlayerController::UpdateCachedDestination()

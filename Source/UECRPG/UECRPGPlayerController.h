@@ -24,7 +24,6 @@ class AUECRPGPlayerController : public APlayerController
 	GENERATED_BODY()
 
 protected:
-
 	/** Component used for moving along a NavMesh path. */
 	UPROPERTY(VisibleDefaultsOnly, Category = AI)
 	TObjectPtr<UPathFollowingComponent> PathFollowingComponent;
@@ -40,7 +39,7 @@ protected:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
-	
+
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> SetDestinationClickAction;
@@ -48,6 +47,9 @@ protected:
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> SetDestinationTouchAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> ToggleInventoryAction;
 
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -62,15 +64,13 @@ protected:
 	float FollowTime = 0.0f;
 
 public:
-
 	/** Constructor */
 	AUECRPGPlayerController();
 
 protected:
-
 	/** Initialize input bindings */
 	virtual void SetupInputComponent() override;
-	
+
 	/** Input handlers */
 	void OnInputStarted();
 	void OnSetDestinationTriggered();
@@ -78,8 +78,8 @@ protected:
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
+	void OnInventoryToggled();
+
 	/** Helper function to get the move destination */
 	void UpdateCachedDestination();
 };
-
-
