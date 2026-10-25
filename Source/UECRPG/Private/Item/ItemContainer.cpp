@@ -77,7 +77,7 @@ void AItemContainer::RemoveALl()
 		{
 			UGlobalFunc::GetSubsystem<UInventorySystem>()->AddItem(Item->GetItemID(), Item->Num, false);
 		}
-		UGlobalFunc::GetSubsystem<UInventorySystem>()->DoItemChangeBroadcast();
+		UGlobalFunc::GetSubsystem<UInventorySystem>()->BroadcastItemChange();
 		ContainedItems.Empty();
 	}
 }

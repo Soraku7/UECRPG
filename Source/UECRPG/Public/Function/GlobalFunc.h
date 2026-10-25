@@ -22,7 +22,6 @@ public:
 
 		if (CachedSubSystem.IsValid())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("此SubSystem由缓存%s"), *CachedSubSystem->GetClass()->GetName());
 			return CachedSubSystem.Get();
 		}
 

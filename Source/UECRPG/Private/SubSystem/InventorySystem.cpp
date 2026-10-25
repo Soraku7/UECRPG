@@ -38,7 +38,7 @@ TArray<UItemObject*> UInventorySystem::GetItemsByType(const EItemType ItemType)
 	{
 		return GetAllItems();
 	}
-	
+
 	return Inventory.FindRef(ItemType).ItemArray;
 }
 
@@ -115,6 +115,12 @@ UItemObject* UInventorySystem::ReduceItem(const int32 ItemID, const int32 Num, c
 	return AddItem(ItemID, -Num, bAutoBroadCast);
 }
 
+void UInventorySystem::CollectItem(const int32 ItemID, const int32 Num)
+{
+	AddItem(ItemID ,Num , true);
+	BroadcastItemCollect(ItemID, Num);
+}
+
 FItemData* UInventorySystem::GetItemData(const int32 ItemID) const
 {
 	if (IsValid(ItemDataTable))
@@ -184,10 +190,26 @@ UItemObject* UInventorySystem::CreateItem(const int32 ItemID)
 	return Item;
 }
 
-void UInventorySystem::DoItemChangeBroadcast()
+void UInventorySystem::BroadcastItemChange() const
 {
 	if (OnItemChangeDelegate.IsBound())
 	{
 		OnItemChangeDelegate.Broadcast(0);
+	}
+}
+
+void UInventorySystem::BroadcastItemCollect(const int32 ItemID, const int32 Num) const
+{
+	if (OnItemCollectDelegate.IsBound())
+	{
+		OnItemCollectDelegate.Broadcast(ItemID , Num);
+	}
+}
+
+void UInventorySystem::BroadcastOnDragStatus(const bool bIsDragging) const
+{
+	if (OnDragDelegate.IsBound())
+	{
+		OnDragDelegate.Broadcast(bIsDragging);
 	}
 }

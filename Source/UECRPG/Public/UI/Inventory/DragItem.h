@@ -6,6 +6,8 @@
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "DragItem.generated.h"
 
+class UItemObject;
+class UImage;
 /**
  * 
  */
@@ -13,4 +15,11 @@ UCLASS()
 class UECRPG_API UDragItem : public UUserWidget
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> Icon;
+
+public:
+	void SetContent(const UItemObject* Item) const;
 };

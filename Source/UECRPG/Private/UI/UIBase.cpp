@@ -32,10 +32,22 @@ void UUIBase::DoLoad()
 		CloseTimerDelegate.Unbind();
 		CloseTimerDelegate = nullptr;
 	}
+
+	if (bIsUIOnlyMode)
+	{
+		GetWorld()->GetFirstPlayerController()->SetInputMode(FInputModeUIOnly());
+	}
 }
 
 void UUIBase::DoUnload()
 {
+	if (bIsUIOnlyMode)
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+		GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
+	}
 }
 
 void UUIBase::DoClose(const float CloseTime)

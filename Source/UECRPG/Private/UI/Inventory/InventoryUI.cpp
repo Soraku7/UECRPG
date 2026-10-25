@@ -4,17 +4,22 @@
 #include "Public/UI/Inventory/InventoryUI.h"
 
 
+#include "Blueprint/DragDropOperation.h"
 #include "Components/Button.h"
 #include "Components/WrapBox.h"
 #include "Data/GlobalEnum.h"
 #include "Function/GlobalFunc.h"
 #include "SubSystem/InventorySystem.h"
+#include "UI/Inventory/DropArea.h"
 #include "UI/Inventory/InventorySlot.h"
+#include "UI/Inventory/ItemDragDropOperation.h"
 #include "UI/Item/ItemObject.h"
 #include "UI/Inventory/ItemTypeToggle.h"
 
 void UInventoryUI::NativeOnInitialized()
 {
+	DropArea->SetParent(this);
+	
 	for (EItemType ItemType : TEnumRange<EItemType>())
 	{
 		const auto Toggle = CreateWidget<UItemTypeToggle>(this, UItemTypeToggleClass);
@@ -55,6 +60,22 @@ void UInventoryUI::UnBindDelegates()
 	CloseBtn->OnClicked.Clear();
 	UGlobalFunc::GetSubsystem<UInventorySystem>()->OnItemChangeDelegate.RemoveDynamic(
 		this, &UInventoryUI::OnRefreshInventory);
+}
+
+bool UInventoryUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+                                UDragDropOperation* InOperation)
+{
+	const auto DragOperation = Cast<UItemDragDropOperation>(InOperation);
+	if (IsValid(DragOperation))
+	{
+		if (DropArea->GetCachedGeometry().IsUnderLocation(InDragDropEvent.GetScreenSpacePosition()))
+		{
+			DropArea->HandleOnDrop(DragOperation->InventoryItem);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void UInventoryUI::DoLoad()
@@ -120,11 +141,11 @@ void UInventoryUI::OnToggleSelected(const UUniversalToggle* SelectToggle)
 	{
 		return;
 	}
-	
+
 	ItemTypeMap[CurType]->SetSelected(false);
 	CurType = Toggle->GetItemType();
 	ItemTypeMap[CurType]->SetSelected(true);
-	
+
 	RefreshData();
 }
 

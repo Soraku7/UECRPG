@@ -8,6 +8,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemChangeSignature, const int32, ItemID);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FItemCollectSignature, const int32, ItemID, const int32, Num);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDragSignature, const bool bIsDragging);
+
 struct FItemData;
 class UItemObject;
 enum class EItemType : uint8;
@@ -40,6 +44,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FItemChangeSignature OnItemChangeDelegate;
 
+	UPROPERTY(BlueprintAssignable)
+	FItemCollectSignature OnItemCollectDelegate;
+
+	FOnDragSignature OnDragDelegate;
+
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
@@ -55,6 +64,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* ReduceItem(const int32 ItemID, const int32 Num = 1, const bool bAutoBroadCast = true);
 
+	void CollectItem(const int32 ItemID, const int32 Num = 1);
+	
 	FItemData* GetItemData(const int32 ItemID) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -65,7 +76,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* CreateItem(const int32 ItemID);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void BroadcastItemChange() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void BroadcastItemCollect(const int32 ItemID, const int32 Num) const;
 	
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void DoItemChangeBroadcast();
+	void BroadcastOnDragStatus(const bool bIsDragging) const;
 };

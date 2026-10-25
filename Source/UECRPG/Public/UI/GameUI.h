@@ -6,6 +6,7 @@
 #include "UIBase.h"
 #include "GameUI.generated.h"
 
+class UDropArea;
 class UButton;
 /**
  * 
@@ -19,6 +20,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> InventoryButton;
 
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UDropArea> DropArea;
+
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -26,7 +30,13 @@ protected:
 
 	virtual void UnBindDelegates() override;
 
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+	                          UDragDropOperation* InOperation) override;
+
 protected:
 	UFUNCTION()
 	void ToggleInventory();
+
+	UFUNCTION()
+	void OnItemDrop(const bool bIsDragging);
 };

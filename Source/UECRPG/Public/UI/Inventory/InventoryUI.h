@@ -7,6 +7,7 @@
 #include "Public/UI/UIBase.h"
 #include "InventoryUI.generated.h"
 
+class UDropArea;
 class UUniversalToggle;
 class UItemTypeToggle;
 enum class EItemType : uint8;
@@ -36,6 +37,9 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UButton> CloseBtn;
+	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UDropArea> DropArea;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UInventorySlot>> SlotItems;
@@ -51,6 +55,9 @@ protected:
 	virtual void BindDelegates() override;
 
 	virtual void UnBindDelegates() override;
+
+	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+		UDragDropOperation* InOperation) override;
 
 public:
 	virtual void DoLoad() override;

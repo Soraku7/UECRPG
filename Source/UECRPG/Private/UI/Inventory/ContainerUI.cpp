@@ -3,14 +3,20 @@
 
 #include "UI/Inventory/ContainerUI.h"
 
+#include "Function/GlobalFunc.h"
 #include "Item/ItemContainer.h"
 #include "Runtime/UMG/Public/Components/Button.h"
 #include "Runtime/UMG/Public/Components/WrapBox.h"
-#include "UI/Inventory/InventorySlot.h"
+#include "SubSystem/InventorySystem.h"
+#include "UI/Inventory/ContainerSlot.h"
+#include "UI/Inventory/DropArea.h"
+#include "UI/Inventory/ItemDragDropOperation.h"
 #include "UI/Item/ItemObject.h"
 
 void UContainerUI::NativeOnInitialized()
 {
+	DropArea->SetParent(this);
+	
 	for (uint8 i = 0; i < 10; i++)
 	{
 		AddSlot();
@@ -23,12 +29,15 @@ void UContainerUI::BindDelegates()
 {
 	CollectAllBtn->OnClicked.AddDynamic(this, &UContainerUI::CollectAll);
 	CloseBtn->OnClicked.AddDynamic(this, &UContainerUI::DoCloseAction);
+	UGlobalFunc::GetSubsystem<UInventorySystem>()->OnItemCollectDelegate.AddDynamic(this, &UContainerUI::CollectItem);
 }
 
 void UContainerUI::UnBindDelegates()
 {
 	CollectAllBtn->OnClicked.Clear();
 	CloseBtn->OnClicked.Clear();
+	UGlobalFunc::GetSubsystem<UInventorySystem>()->OnItemCollectDelegate.
+	                                               RemoveDynamic(this, &UContainerUI::CollectItem);
 }
 
 void UContainerUI::ShowItems(AItemContainer* Container)
@@ -116,9 +125,26 @@ void UContainerUI::CollectAll()
 
 void UContainerUI::AddSlot()
 {
-	const auto ItemSlot = CreateWidget<UInventorySlot>(this, UContainerClass);
+	const auto ItemSlot = CreateWidget<UContainerSlot>(this, UContainerClass);
 	ContainerPanel->AddChild(ItemSlot);
 	ItemSlot->RefreshData(nullptr);
 	ItemSlot->SetParent(this);
 	SlotItems.Add(ItemSlot);
+}
+
+bool UContainerUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,
+                                UDragDropOperation* InOperation)
+{
+	const auto DragOperation = Cast<UItemDragDropOperation>(InOperation);
+
+	if (IsValid(DragOperation))
+	{
+		if (DropArea->GetCachedGeometry().IsUnderLocation(InDragDropEvent.GetScreenSpacePosition()))
+		{
+			DropArea->HandleOnDrop(DragOperation->InventoryItem);
+			return true;
+		}
+	}
+
+	return false;
 }

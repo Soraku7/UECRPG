@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config", DisplayName = "Sort")
 	int32 ZOrder = 0;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Config", DisplayName = "UI Only Mode")
+	bool bIsUIOnlyMode = false;
+
 protected:
 	virtual void NativeOnInitialized() override;
 
