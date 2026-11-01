@@ -2,21 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "GlobalEnum.h"
+#include "Luban/Generated/schema.h"
 #include "ItemDataStruct.generated.h"
 
 USTRUCT(BlueprintType)
-struct FItemData : public FTableRowBase
+struct FItemData
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Name")
-	FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Description")
-	FString Description;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Icon")
-	TObjectPtr<UTexture2D> Icon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Type")
 	EItemType ItemType;
@@ -39,17 +31,23 @@ struct FItemData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item", DisplayName = "Max Stack")
 	int MaxStack;
 
-	FItemData() : Name(""), Description(""), Icon(nullptr), ItemType(EItemType::All), ItemQuality(EItemQuality::Poor),
+	FItemData() : ItemType(EItemType::All), ItemQuality(EItemQuality::Poor),
 	              Weight(0), BuyPrice(0), SellPrice(0), bIsStackable(false), MaxStack(0)
+	{
+	}
+
+	explicit FItemData(const luban::SharedPtr<cfg::Item::ItemData>& TableData) :
+		ItemType(static_cast<EItemType>(TableData->type)),
+		ItemQuality(static_cast<EItemQuality>(TableData->quality)),
+		Weight(TableData->weight), BuyPrice(TableData->buy), SellPrice(TableData->sell),
+		bIsStackable(TableData->stackable),
+		MaxStack(TableData->maxStack)
 	{
 	}
 
 	static FItemData Set(const FItemData& InItemData)
 	{
 		FItemData Item;
-		Item.Name = InItemData.Name;
-		Item.Description = InItemData.Description;
-		Item.Icon = InItemData.Icon;
 		Item.ItemType = InItemData.ItemType;
 		Item.ItemQuality = InItemData.ItemQuality;
 		Item.Weight = InItemData.Weight;

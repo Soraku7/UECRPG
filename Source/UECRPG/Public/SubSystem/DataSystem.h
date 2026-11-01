@@ -24,7 +24,7 @@ public:
 
 	FORCEINLINE cfg::Tables GetGlobalTables() const { return GlobalTables; }
 
-	FORCEINLINE luban::SharedPtr<cfg::item::Item> GetGlobalTable(const int32 ItemID)
+	FORCEINLINE luban::SharedPtr<cfg::Item::ItemTable> GetTbItemData(const int32 ItemID)
 	{
 		return GlobalTables.TbItem.get(ItemID);
 	}

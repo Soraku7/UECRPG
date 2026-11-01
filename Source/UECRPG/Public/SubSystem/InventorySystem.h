@@ -37,9 +37,6 @@ protected:
 	UPROPERTY()
 	TMap<EItemType, FTypeItemHolder> Inventory;
 
-	UPROPERTY()
-	TObjectPtr<UDataTable> ItemDataTable;
-
 public:
 	UPROPERTY(BlueprintAssignable)
 	FItemChangeSignature OnItemChangeDelegate;
@@ -64,9 +61,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* ReduceItem(const int32 ItemID, const int32 Num = 1, const bool bAutoBroadCast = true);
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CollectItem(const int32 ItemID, const int32 Num = 1);
 	
-	FItemData* GetItemData(const int32 ItemID) const;
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	EItemType GetItemType(const int32 ItemID) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UItemObject* GetItem(const int32 ItemID) const;
@@ -82,7 +81,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void BroadcastItemCollect(const int32 ItemID, const int32 Num) const;
-	
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void BroadcastOnDragStatus(const bool bIsDragging) const;
 };

@@ -3,9 +3,17 @@
 
 #include "UI/Item/ItemObject.h"
 
+#include "Function/GlobalFunc.h"
+#include "SubSystem/DataSystem.h"
 
-void UItemObject::Initialized(const int32 ItemID, const FItemData& InItemData)
+
+void UItemObject::Initialized(const int32 ItemID)
 {
-	ID = ItemID;
-	Data = FItemData::Set(InItemData);
+	const auto TbItemData = UGlobalFunc::GetSubsystem<UDataSystem>()->GetTbItemData(ItemID);
+	if (TbItemData != nullptr)
+	{
+		ID = TbItemData->id;
+		InfoData = FInfoData(TbItemData->basicInfo);
+		Data = FItemData(TbItemData->itemData);
+	}
 }

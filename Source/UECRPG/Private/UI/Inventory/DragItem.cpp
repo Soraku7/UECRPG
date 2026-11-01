@@ -8,5 +8,9 @@
 
 void UDragItem::SetContent(const UItemObject* Item) const
 {
-	Icon->SetBrushFromTexture(Item->GetData().Icon);
+	if (const auto IconResource = LoadObject<UTexture2D>(nullptr , *Item->GetInfoData().Icon))
+	{
+		Icon->SetBrushFromTexture(IconResource);
+		Icon->SetVisibility(ESlateVisibility::Visible);
+	}
 }

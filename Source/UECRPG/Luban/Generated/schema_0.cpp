@@ -12,20 +12,73 @@
 namespace cfg {
 
 
-bool item::Item::deserialize(::luban::ByteBuf& _buf)
+bool Item::ItemData::deserialize(::luban::ByteBuf& _buf)
 {
 
-    if(!_buf.readInt(id)) return false;
-    if(!_buf.readString(name)) return false;
-    if(!_buf.readString(desc)) return false;
-    if(!_buf.readInt(count)) return false;
+    {int __enum_temp__; if(!_buf.readInt(__enum_temp__)) return false; type = Item::ItemType(__enum_temp__); }
+    {int __enum_temp__; if(!_buf.readInt(__enum_temp__)) return false; quality = Item::ItemQuality(__enum_temp__); }
+    if(!_buf.readFloat(weight)) return false;
+    if(!_buf.readFloat(buy)) return false;
+    if(!_buf.readFloat(sell)) return false;
+    if (!_buf.readBool(stackable)) return false;
+    if(!_buf.readInt(maxStack)) return false;
 
     return true;
 }
 
-bool item::Item::deserializeItem(::luban::ByteBuf& _buf, ::luban::SharedPtr<item::Item>& _out)
+bool Item::ItemData::deserializeItemData(::luban::ByteBuf& _buf, ::luban::SharedPtr<Item::ItemData>& _out)
 {
-    _out.reset(LUBAN_NEW(item::Item));
+    _out.reset(LUBAN_NEW(Item::ItemData));
+    if (_out->deserialize(_buf))
+    {
+        return true;
+    }
+    else
+    { 
+        _out.reset();
+        return false;
+    }
+}
+
+
+bool Item::ItemTable::deserialize(::luban::ByteBuf& _buf)
+{
+
+    if(!_buf.readInt(id)) return false;
+    if(!Uni::BasicInfo::deserializeBasicInfo(_buf, basicInfo)) return false;
+    if(!Item::ItemData::deserializeItemData(_buf, itemData)) return false;
+
+    return true;
+}
+
+bool Item::ItemTable::deserializeItemTable(::luban::ByteBuf& _buf, ::luban::SharedPtr<Item::ItemTable>& _out)
+{
+    _out.reset(LUBAN_NEW(Item::ItemTable));
+    if (_out->deserialize(_buf))
+    {
+        return true;
+    }
+    else
+    { 
+        _out.reset();
+        return false;
+    }
+}
+
+
+bool Uni::BasicInfo::deserialize(::luban::ByteBuf& _buf)
+{
+
+    if(!_buf.readString(name)) return false;
+    if(!_buf.readString(des)) return false;
+    if(!_buf.readString(icon)) return false;
+
+    return true;
+}
+
+bool Uni::BasicInfo::deserializeBasicInfo(::luban::ByteBuf& _buf, ::luban::SharedPtr<Uni::BasicInfo>& _out)
+{
+    _out.reset(LUBAN_NEW(Uni::BasicInfo));
     if (_out->deserialize(_buf))
     {
         return true;

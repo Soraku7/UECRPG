@@ -4,6 +4,8 @@
 #include "Public/SubSystem/InventorySystem.h"
 
 #include "Data/ItemDataStruct.h"
+#include "Function/GlobalFunc.h"
+#include "SubSystem/DataSystem.h"
 #include "UI/Item/ItemObject.h"
 
 FTypeItemHolder::FTypeItemHolder()
@@ -13,8 +15,6 @@ FTypeItemHolder::FTypeItemHolder()
 void UInventorySystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-
-	ItemDataTable = LoadObject<UDataTable>(nullptr, TEXT("/Game/Data/ItemDataTable"));
 }
 
 TArray<UItemObject*> UInventorySystem::GetAllItems()
@@ -44,13 +44,9 @@ TArray<UItemObject*> UInventorySystem::GetItemsByType(const EItemType ItemType)
 
 UItemObject* UInventorySystem::AddItem(const int32 ItemID, const int32 Num, const bool bAutoBroadCast)
 {
-	const auto ItemData = GetItemData(ItemID);
-	if (!ItemData)
-	{
+	const EItemType ItemType = GetItemType(ItemID);
+	if (ItemType == EItemType::All)
 		return nullptr;
-	}
-
-	EItemType ItemType = ItemData->ItemType;
 
 	if (!Inventory.Contains(ItemType))
 	{
@@ -117,28 +113,26 @@ UItemObject* UInventorySystem::ReduceItem(const int32 ItemID, const int32 Num, c
 
 void UInventorySystem::CollectItem(const int32 ItemID, const int32 Num)
 {
-	AddItem(ItemID ,Num , true);
+	AddItem(ItemID, Num, true);
 	BroadcastItemCollect(ItemID, Num);
 }
 
-FItemData* UInventorySystem::GetItemData(const int32 ItemID) const
+EItemType UInventorySystem::GetItemType(const int32 ItemID) const
 {
-	if (IsValid(ItemDataTable))
+	const auto TbItemData = UGlobalFunc::GetSubsystem<UDataSystem>()->GetTbItemData(ItemID);
+	if (TbItemData != nullptr)
 	{
-		FItemData* ItemData = ItemDataTable->FindRow<FItemData>(FName(*FString::FromInt(ItemID)), TEXT(""));
-		return ItemData;
+		return static_cast<EItemType>(TbItemData->itemData->type);
 	}
-
-	return nullptr;
+	return EItemType::All;
 }
 
 UItemObject* UInventorySystem::GetItem(const int32 ItemID) const
 {
-	const auto ItemData = GetItemData(ItemID);
-	if (!ItemData)
+	const EItemType ItemType = GetItemType(ItemID);
+	if (ItemType == EItemType::All)
 		return nullptr;
 
-	const EItemType ItemType = ItemData->ItemType;
 	if (!Inventory.Contains(ItemType))
 		return nullptr;
 
@@ -166,27 +160,23 @@ int32 UInventorySystem::GetItemNum(const int32 ItemID) const
 
 UItemObject* UInventorySystem::CreateItem(const int32 ItemID)
 {
-	const auto ItemData = GetItemData(ItemID);
-	if (!ItemData)
-		return nullptr;
-
-	const EItemType ItemType = ItemData->ItemType;
+	const EItemType ItemType = GetItemType(ItemID);
 	if (ItemType == EItemType::All)
 		return nullptr;
 
-	UItemObject* Item;
+	UItemObject* Item = NewObject<UItemObject>();
 
-	switch (ItemType)
-	{
-	case EItemType::Consumable:
-		Item = NewObject<UItemObject>();
-		break;
-	default:
-		Item = NewObject<UItemObject>();
-		break;
-	}
+	// switch (ItemType)
+	// {
+	// case EItemType::Consumable:
+	// 	Item = NewObject<UItemObject>();
+	// 	break;
+	// default:
+	// 	Item = NewObject<UItemObject>();
+	// 	break;
+	// }
 
-	Item->Initialized(ItemID, *ItemData);
+	Item->Initialized(ItemID);
 	return Item;
 }
 
@@ -202,7 +192,7 @@ void UInventorySystem::BroadcastItemCollect(const int32 ItemID, const int32 Num)
 {
 	if (OnItemCollectDelegate.IsBound())
 	{
-		OnItemCollectDelegate.Broadcast(ItemID , Num);
+		OnItemCollectDelegate.Broadcast(ItemID, Num);
 	}
 }
 

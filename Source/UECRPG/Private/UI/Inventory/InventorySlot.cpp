@@ -75,8 +75,11 @@ void UInventorySlot::RefreshData(UItemObject* InItem, const int32 ShowNum)
 
 	if (IsValid(Item))
 	{
-		Icon->SetBrushFromTexture(Item->GetData().Icon);
-		Icon->SetVisibility(ESlateVisibility::Visible);
+		if (const auto IconResource = LoadObject<UTexture2D>(nullptr, *InItem->GetInfoData().Icon))
+		{
+			Icon->SetBrushFromTexture(IconResource);
+			Icon->SetVisibility(ESlateVisibility::Visible);
+		}
 
 		if (ItemNum > 1)
 		{

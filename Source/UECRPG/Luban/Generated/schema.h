@@ -15,19 +15,136 @@
 
 namespace cfg {
 
+namespace Item { 
+    /// <summary>
+    /// 物品品质
+    /// </summary>
+    enum class ItemQuality
+    {
+        /// <summary>
+        /// 劣质
+        /// </summary>
+        Poor = 0,
+        /// <summary>
+        /// 普通
+        /// </summary>
+        Common = 1,
+        /// <summary>
+        /// 优良
+        /// </summary>
+        Good = 2,
+        /// <summary>
+        /// 史诗
+        /// </summary>
+        Epic = 3,
+        /// <summary>
+        /// 传说
+        /// </summary>
+        Legendary = 4,
+    };
 
-namespace item { struct Item; }
+} 
+
+
+namespace Item { 
+    /// <summary>
+    /// 物品类型
+    /// </summary>
+    enum class ItemType
+    {
+        /// <summary>
+        /// 消耗品
+        /// </summary>
+        Consumable = 1,
+        /// <summary>
+        /// 武器
+        /// </summary>
+        Weapon = 2,
+        /// <summary>
+        /// 护甲
+        /// </summary>
+        Armor = 3,
+        /// <summary>
+        /// 道具
+        /// </summary>
+        Prop = 4,
+        /// <summary>
+        /// 收集品
+        /// </summary>
+        Collectable = 5,
+        /// <summary>
+        /// 任务道具
+        /// </summary>
+        Quest = 6,
+        /// <summary>
+        /// 杂物
+        /// </summary>
+        Mundane = 7,
+    };
+
+} 
+
+
+namespace Item { struct ItemData; }
+namespace Item { struct ItemTable; }
+namespace Uni { struct BasicInfo; }
  struct vector2; 
  struct vector3; 
  struct vector4; 
 
-namespace item {
+namespace Item {
 
-struct Item : public luban::CfgBean 
+struct ItemData : public luban::CfgBean 
 {
-    static bool deserializeItem(::luban::ByteBuf& _buf, ::luban::SharedPtr<Item>& _out);
+    static bool deserializeItemData(::luban::ByteBuf& _buf, ::luban::SharedPtr<ItemData>& _out);
 
-    virtual ~Item() {}
+    virtual ~ItemData() {}
+
+    bool deserialize(::luban::ByteBuf& _buf);
+
+    /**
+     * 类型
+     */
+    Item::ItemType type;
+    /**
+     * 品质
+     */
+    Item::ItemQuality quality;
+    /**
+     * 重量
+     */
+    ::luban::float32 weight;
+    /**
+     * 买入价
+     */
+    ::luban::float32 buy;
+    /**
+     * 卖出价
+     */
+    ::luban::float32 sell;
+    /**
+     * 是否堆叠
+     */
+    bool stackable;
+    /**
+     * 最大堆叠数
+     */
+    ::luban::int32 maxStack;
+
+    static constexpr int __ID__ = 799665624;
+
+    int getTypeId() const override { return __ID__; }
+};
+
+}
+
+namespace Item {
+
+struct ItemTable : public luban::CfgBean 
+{
+    static bool deserializeItemTable(::luban::ByteBuf& _buf, ::luban::SharedPtr<ItemTable>& _out);
+
+    virtual ~ItemTable() {}
 
     bool deserialize(::luban::ByteBuf& _buf);
 
@@ -38,17 +155,43 @@ struct Item : public luban::CfgBean
     /**
      * 名称
      */
+    ::luban::SharedPtr<Uni::BasicInfo> basicInfo;
+    /**
+     * 类型
+     */
+    ::luban::SharedPtr<Item::ItemData> itemData;
+
+    static constexpr int __ID__ = -965409952;
+
+    int getTypeId() const override { return __ID__; }
+};
+
+}
+
+namespace Uni {
+
+struct BasicInfo : public luban::CfgBean 
+{
+    static bool deserializeBasicInfo(::luban::ByteBuf& _buf, ::luban::SharedPtr<BasicInfo>& _out);
+
+    virtual ~BasicInfo() {}
+
+    bool deserialize(::luban::ByteBuf& _buf);
+
+    /**
+     * 名称
+     */
     ::luban::String name;
     /**
      * 描述
      */
-    ::luban::String desc;
+    ::luban::String des;
     /**
-     * 个数
+     * 图标
      */
-    ::luban::int32 count;
+    ::luban::String icon;
 
-    static constexpr int __ID__ = 2107285806;
+    static constexpr int __ID__ = -1996758466;
 
     int getTypeId() const override { return __ID__; }
 };
@@ -118,14 +261,14 @@ struct vector4 : public luban::CfgBean
 
 
 
-namespace item {
+namespace Item {
 
 
 class TbItem
 {
     private:
-    ::luban::HashMap<::luban::int32, ::luban::SharedPtr<item::Item>> _dataMap;
-    ::luban::Vector<::luban::SharedPtr<item::Item>> _dataList;
+    ::luban::HashMap<::luban::int32, ::luban::SharedPtr<Item::ItemTable>> _dataMap;
+    ::luban::Vector<::luban::SharedPtr<Item::ItemTable>> _dataList;
     
     public:
     bool load(::luban::ByteBuf& _buf)
@@ -134,24 +277,24 @@ class TbItem
         if (!_buf.readSize(n)) return false;
         for(; n > 0 ; --n)
         {
-            ::luban::SharedPtr<item::Item> _v;
-            if(!item::Item::deserializeItem(_buf, _v)) return false;
+            ::luban::SharedPtr<Item::ItemTable> _v;
+            if(!Item::ItemTable::deserializeItemTable(_buf, _v)) return false;
             _dataList.push_back(_v);
             _dataMap[_v->id] = _v;
         }
         return true;
     }
 
-    const ::luban::HashMap<::luban::int32, ::luban::SharedPtr<item::Item>>& getDataMap() const { return _dataMap; }
-    const ::luban::Vector<::luban::SharedPtr<item::Item>>& getDataList() const { return _dataList; }
+    const ::luban::HashMap<::luban::int32, ::luban::SharedPtr<Item::ItemTable>>& getDataMap() const { return _dataMap; }
+    const ::luban::Vector<::luban::SharedPtr<Item::ItemTable>>& getDataList() const { return _dataList; }
 
-    item::Item* getRaw(::luban::int32 key)
+    Item::ItemTable* getRaw(::luban::int32 key)
     { 
         auto it = _dataMap.find(key);
         return it != _dataMap.end() ? it->second.get() : nullptr;
     }
 
-    ::luban::SharedPtr<item::Item> get(::luban::int32 key)
+    ::luban::SharedPtr<Item::ItemTable> get(::luban::int32 key)
     { 
         auto it = _dataMap.find(key);
         return it != _dataMap.end() ? it->second : nullptr;
@@ -164,7 +307,7 @@ class TbItem
 class Tables
 {
     public:
-     item::TbItem TbItem;
+     Item::TbItem TbItem;
 
     bool load(::luban::Loader<::luban::ByteBuf> loader)
     {
