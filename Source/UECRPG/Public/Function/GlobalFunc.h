@@ -46,4 +46,23 @@ public:
 		CachedSubSystem = Subsystem;
 		return Subsystem;
 	}
+
+	static UTexture2D* GetCachedIcon(const FString& IconName)
+	{
+		static TMap<FString, TWeakObjectPtr<UTexture2D>> CachedIcons;
+
+		if (!CachedIcons.Contains(IconName))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("no cached %s"), *IconName);
+			const auto IconResource = LoadObject<UTexture2D>(nullptr, *IconName);
+			if (IsValid(IconResource))
+			{
+				CachedIcons.Add(IconName, IconResource);
+				return IconResource;
+			}
+			return nullptr;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("has cached %s"), *IconName);
+		return CachedIcons[IconName].Get();
+	}
 };
