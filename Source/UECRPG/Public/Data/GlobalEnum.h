@@ -26,3 +26,14 @@ enum class EItemQuality : uint8
 	Epic = 3 UMETA(DisplayName = "Epic"),
 	Legendary = 4 UMETA(DisplayName = "Legendary"),
 };
+
+UENUM(BlueprintType)
+enum class EGameStateType : uint8
+{
+	Normal UMETA(DisplayName = "Normal"),
+	Scenario UMETA(DisplayName = "Scenario"),
+	BattlePrePare UMETA(DisplayName = "Battle Prepare"),
+	PlayerBattle UMETA(DisplayName = "Player Battle"),
+	AIBattle UMETA(DisplayName = "AIBattle"),
+	BattleEnd UMETA(DisplayName = "Battle End"),
+};

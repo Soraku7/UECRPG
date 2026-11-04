@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UECRPGPlayerController.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "GlobalFunc.generated.h"
 
+class AUECRPGPlayerController;
 /**
  * 
  */
@@ -64,5 +66,28 @@ public:
 		}
 		UE_LOG(LogTemp, Warning, TEXT("has cached %s"), *IconName);
 		return CachedIcons[IconName].Get();
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "GlobalFunc")
+	static AUECRPGPlayerController* GetPlayerController()
+	{
+		static TWeakObjectPtr<AUECRPGPlayerController> CachedController;
+		if (CachedController.IsValid())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("has cached %s"), *CachedController->GetClass()->GetName());
+			return CachedController.Get();
+		}
+
+		if (!GEngine || !GEngine->GameViewport)
+			return nullptr;
+
+		const auto World = GEngine->GameViewport->GetWorld();
+
+		if (!IsValid(World))
+			return nullptr;
+
+		const auto PlayerController = Cast<AUECRPGPlayerController>(World->GetFirstPlayerController());
+		CachedController = PlayerController;
+		return PlayerController;
 	}
 };
