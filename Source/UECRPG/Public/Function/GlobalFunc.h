@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CRPGGameState.h"
 #include "UECRPGPlayerController.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "GlobalFunc.generated.h"
 
+class UGameplayStatics;
+class ACRPGGameState;
 class AUECRPGPlayerController;
 /**
  * 
@@ -55,7 +59,6 @@ public:
 
 		if (!CachedIcons.Contains(IconName))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("no cached %s"), *IconName);
 			const auto IconResource = LoadObject<UTexture2D>(nullptr, *IconName);
 			if (IsValid(IconResource))
 			{
@@ -64,7 +67,6 @@ public:
 			}
 			return nullptr;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("has cached %s"), *IconName);
 		return CachedIcons[IconName].Get();
 	}
 
@@ -89,5 +91,44 @@ public:
 		const auto PlayerController = Cast<AUECRPGPlayerController>(World->GetFirstPlayerController());
 		CachedController = PlayerController;
 		return PlayerController;
+	}
+
+	static ACRPGGameState* GetGameState()
+	{
+		static TWeakObjectPtr<ACRPGGameState> CachedGameState;
+
+		if (CachedGameState.IsValid())
+		{
+			return CachedGameState.Get();
+		}
+
+		if (!GEngine || !GEngine->GameViewport)
+			return nullptr;
+
+		const auto World = GEngine->GameViewport->GetWorld();
+		if (!IsValid(World))
+			return nullptr;
+
+		const auto GameState = Cast<ACRPGGameState>(UGameplayStatics::GetGameState(World));
+		CachedGameState = GameState;
+		return GameState;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "GlobalFunc")
+	static void SetGameStateType(const EGameStateType Type)
+	{
+		if (const auto GameState = GetGameState() ; IsValid(GameState))
+		{
+			GameState->SetGameStateType(Type);
+		}
+	}
+	
+	static EGameStateType GetGameStateType(EGameStateType& Type)
+	{
+		if (const auto GameState = GetGameState() ; IsValid(GameState))
+		{
+			return GameState->GetGameStateType();
+		}
+		return EGameStateType::Normal;
 	}
 };

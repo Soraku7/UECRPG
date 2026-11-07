@@ -13,7 +13,27 @@ void USubStateBase::StateInit(AUECRPGPlayerController* ControllerRef)
 	GetWorld()->GetFirstPlayerController()->SetInputMode(InputMode);
 }
 
+void USubStateBase::StateEnd()
+{
+}
+
 bool USubStateBase::IsTriggeringDetect()
 {
 	return false;
+}
+
+void USubStateBase::MouseBeginClickAction()
+{
+}
+
+void USubStateBase::MouseTriggeringAction()
+{
+}
+
+void USubStateBase::MouseEndClickAction()
+{
+}
+
+void USubStateBase::MouseCancelClickActon()
+{
 }

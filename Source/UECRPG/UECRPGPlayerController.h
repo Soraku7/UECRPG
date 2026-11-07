@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "UECRPGPlayerController.generated.h"
 
+class ACRPGGameState;
 class UNiagaraSystem;
 class UInputMappingContext;
 class UInputAction;
@@ -62,6 +63,9 @@ protected:
 
 	/** Time that the click input has been pressed */
 	float FollowTime = 0.0f;
+	
+	UPROPERTY()
+	TObjectPtr<ACRPGGameState> GameState;
 
 public:
 	/** Constructor */
@@ -82,4 +86,11 @@ protected:
 
 	/** Helper function to get the move destination */
 	void UpdateCachedDestination();
+
+	virtual void BeginPlay() override;
+	
+public:
+	void DoInputMove();
+	
+	void DoSimpleMove();
 };

@@ -27,6 +27,8 @@ public:
 	virtual bool IsTriggeringDetect();
 
 	virtual void MouseBeginClickAction();
+	
+	virtual void MouseTriggeringAction();
 
 	virtual void MouseEndClickAction();
 

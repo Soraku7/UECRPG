@@ -13,4 +13,9 @@ UCLASS()
 class UECRPG_API UBattlePrepareState : public USubStateBase
 {
 	GENERATED_BODY()
+
+public:
+	virtual void StateInit(AUECRPGPlayerController* ControllerRef) override;
+
+	virtual void StateEnd() override;
 };

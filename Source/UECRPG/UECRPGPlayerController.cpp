@@ -14,6 +14,7 @@
 #include "Engine/LocalPlayer.h"
 #include "UECRPG.h"
 #include "Function/GlobalFunc.h"
+#include "SubState/SubStateBase.h"
 #include "SubSystem/UISystem.h"
 #include "UI/Inventory/InventoryUI.h"
 
@@ -89,37 +90,27 @@ void AUECRPGPlayerController::OnInputStarted()
 
 	// Update the move destination to wherever the cursor is pointing at
 	UpdateCachedDestination();
+
+	GameState->GetSubState()->MouseBeginClickAction();
 }
 
 void AUECRPGPlayerController::OnSetDestinationTriggered()
 {
-	// We flag that the input is being pressed
-	FollowTime += GetWorld()->GetDeltaSeconds();
-
-	// Update the move destination to wherever the cursor is pointing at
-	UpdateCachedDestination();
-
-	// Move towards mouse pointer or touch
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn != nullptr)
+	if (GameState->GetSubState()->IsTriggeringDetect())
 	{
-		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
+		// We flag that the input is being pressed
+		FollowTime += GetWorld()->GetDeltaSeconds();
+
+		// Update the move destination to wherever the cursor is pointing at
+		UpdateCachedDestination();
+
+		GameState->GetSubState()->MouseTriggeringAction();
 	}
 }
 
 void AUECRPGPlayerController::OnSetDestinationReleased()
 {
-	// If it was a short press
-	if (FollowTime <= ShortPressThreshold)
-	{
-		// We move there and spawn some particles
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator,
-		                                               FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-	}
-
-	FollowTime = 0.f;
+	GameState->GetSubState()->MouseEndClickAction();
 }
 
 // Triggered every frame when the input is held down
@@ -159,4 +150,36 @@ void AUECRPGPlayerController::UpdateCachedDestination()
 	{
 		CachedDestination = Hit.Location;
 	}
+}
+
+void AUECRPGPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GameState = UGlobalFunc::GetGameState();
+}
+
+void AUECRPGPlayerController::DoInputMove()
+{
+	// Move towards mouse pointer or touch
+	APawn* ControlledPawn = GetPawn();
+	if (ControlledPawn != nullptr)
+	{
+		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
+	}
+}
+
+void AUECRPGPlayerController::DoSimpleMove()
+{
+	// If it was a short press
+	if (FollowTime <= ShortPressThreshold)
+	{
+		// We move there and spawn some particles
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator,
+		                                               FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+	}
+
+	FollowTime = 0.f;
 }

@@ -3,6 +3,7 @@
 
 #include "CRPGGameState.h"
 
+#include "Function/GlobalFunc.h"
 #include "SubState/BattlePrepareState.h"
 #include "SubState/NormalState.h"
 
@@ -16,6 +17,7 @@ void ACRPGGameState::SetGameStateType(const EGameStateType Type)
 {
 	if (CurSubState != nullptr)
 	{
+		CurSubState->StateEnd();
 	}
 
 	CurGameStateType = Type;
@@ -32,4 +34,6 @@ void ACRPGGameState::SetGameStateType(const EGameStateType Type)
 		CurSubState = NewObject<UBattlePrepareState>(this);
 		break;
 	}
+
+	CurSubState->StateInit(UGlobalFunc::GetPlayerController());
 }

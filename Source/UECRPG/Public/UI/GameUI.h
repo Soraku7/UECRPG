@@ -21,6 +21,9 @@ protected:
 	TObjectPtr<UButton> InventoryButton;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> StartButton;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UDropArea> DropArea;
 
 protected:
@@ -39,4 +42,10 @@ protected:
 
 	UFUNCTION()
 	void OnItemDrop(const bool bIsDragging);
+
+	UFUNCTION()
+	void BattleStart();
+
+public:
+	void ShowStartButton(const bool bIsShow);
 };

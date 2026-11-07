@@ -17,6 +17,8 @@ void UGameUI::NativeOnInitialized()
 
 	DropArea->SetParent(this);
 	DropArea->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+	StartButton->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UGameUI::BindDelegates()
@@ -24,6 +26,7 @@ void UGameUI::BindDelegates()
 	Super::BindDelegates();
 
 	InventoryButton->OnClicked.AddDynamic(this, &UGameUI::ToggleInventory);
+	StartButton->OnClicked.AddDynamic(this, &UGameUI::BattleStart);
 	UGlobalFunc::GetSubsystem<UInventorySystem>()->OnDragDelegate.AddUObject(this, &UGameUI::OnItemDrop);
 }
 
@@ -31,6 +34,7 @@ void UGameUI::UnBindDelegates()
 {
 	Super::UnBindDelegates();
 	InventoryButton->OnClicked.Clear();
+	StartButton->OnClicked.Clear();
 	UGlobalFunc::GetSubsystem<UInventorySystem>()->OnDragDelegate.Clear();
 }
 
@@ -49,6 +53,16 @@ void UGameUI::OnItemDrop(const bool bIsDragging)
 	{
 		DropArea->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
+}
+
+void UGameUI::BattleStart()
+{
+	UGlobalFunc::SetGameStateType(EGameStateType::Normal);
+}
+
+void UGameUI::ShowStartButton(const bool bIsShow)
+{
+	StartButton->SetVisibility(bIsShow ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 }
 
 bool UGameUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent,

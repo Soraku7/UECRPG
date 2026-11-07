@@ -27,7 +27,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<USubStateBase> CurSubState;
 
-protected:
+public:
 	void SetGameStateType(const EGameStateType Type);
 
 	FORCEINLINE EGameStateType GetGameStateType() const { return CurGameStateType; }

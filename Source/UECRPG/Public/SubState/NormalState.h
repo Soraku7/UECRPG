@@ -12,5 +12,13 @@
 UCLASS()
 class UECRPG_API UNormalState : public USubStateBase
 {
+
 	GENERATED_BODY()
+	
+public:
+	virtual bool IsTriggeringDetect() override;
+	virtual void MouseBeginClickAction() override;
+	virtual void MouseTriggeringAction() override;
+	virtual void MouseEndClickAction() override;
+
 };
