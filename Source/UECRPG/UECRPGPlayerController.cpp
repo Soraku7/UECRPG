@@ -13,6 +13,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Engine/LocalPlayer.h"
 #include "UECRPG.h"
+#include "Camera/CameraPawn.h"
 #include "Function/GlobalFunc.h"
 #include "SubState/SubStateBase.h"
 #include "SubSystem/UISystem.h"
@@ -73,6 +74,17 @@ void AUECRPGPlayerController::SetupInputComponent()
 
 			EnhancedInputComponent->BindAction(ToggleInventoryAction, ETriggerEvent::Started, this,
 			                                   &AUECRPGPlayerController::OnInventoryToggled);
+
+			EnhancedInputComponent->BindAction(CameraRotateAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnCameraRotate);
+			EnhancedInputComponent->BindAction(CameraMoveRightAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnCameraMoveRight);
+			EnhancedInputComponent->BindAction(CameraMoveForwardAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnCameraMoveForward);
+			EnhancedInputComponent->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this,
+			                                   &AUECRPGPlayerController::OnCameraZoom);
+			EnhancedInputComponent->BindAction(CameraResetAction, ETriggerEvent::Started, this,
+			                                   &AUECRPGPlayerController::OnCameraReset);
 		}
 		else
 		{
@@ -152,17 +164,64 @@ void AUECRPGPlayerController::UpdateCachedDestination()
 	}
 }
 
+void AUECRPGPlayerController::OnCameraRotate(const FInputActionInstance& Instance)
+{
+	CameraPawn->Rotate(Instance.GetValue().Get<float>());
+}
+
+void AUECRPGPlayerController::OnCameraMoveRight(const FInputActionInstance& Instance)
+{
+	if (CameraPawn->bIsFollowingActor)
+	{
+		CameraPawn->StopFollowingActor();
+	}
+	CameraPawn->MoveRight(Instance.GetValue().Get<float>());
+}
+
+void AUECRPGPlayerController::OnCameraMoveForward(const FInputActionInstance& Instance)
+{
+	if (CameraPawn->bIsFollowingActor)
+	{
+		CameraPawn->StopFollowingActor();
+	}
+	CameraPawn->MoveForward(Instance.GetValue().Get<float>());
+}
+
+void AUECRPGPlayerController::OnCameraZoom(const FInputActionInstance& Instance)
+{
+	CameraPawn->Zoom(Instance.GetValue().Get<float>());
+}
+
+void AUECRPGPlayerController::OnCameraReset()
+{
+	CameraPawn->ResetAll();
+	if (IsValid(CameraPawn))
+	{
+		CameraPawn->StartFollowingActor(CurCharacter);
+	}
+}
+
 void AUECRPGPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GameState = UGlobalFunc::GetGameState();
+
+	CameraPawn = GetPawn<ACameraPawn>();
+	if (IsValid(CameraPawn))
+	{
+		CameraPawn->Initialize();
+		if (IsValid(CameraPawn))
+		{
+			CameraPawn->StartFollowingActor(CurCharacter);
+		}
+	}
 }
 
 void AUECRPGPlayerController::DoInputMove()
 {
 	// Move towards mouse pointer or touch
-	APawn* ControlledPawn = GetPawn();
+	APawn* ControlledPawn = CurCharacter;
 	if (ControlledPawn != nullptr)
 	{
 		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
@@ -176,10 +235,23 @@ void AUECRPGPlayerController::DoSimpleMove()
 	if (FollowTime <= ShortPressThreshold)
 	{
 		// We move there and spawn some particles
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(CurCharacter->GetController(), CachedDestination);
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator,
 		                                               FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
 	}
 
 	FollowTime = 0.f;
+}
+
+void AUECRPGPlayerController::SetCurCharacter(AUECRPGCharacter* InCharacter)
+{
+	if (IsValid(InCharacter))
+	{
+		CurCharacter = InCharacter;
+
+		if (IsValid(CameraPawn))
+		{
+			CameraPawn->StartFollowingActor(CurCharacter);
+		}
+	}
 }

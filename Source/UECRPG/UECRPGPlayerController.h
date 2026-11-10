@@ -7,6 +7,9 @@
 #include "GameFramework/PlayerController.h"
 #include "UECRPGPlayerController.generated.h"
 
+struct FInputActionInstance;
+class AUECRPGCharacter;
+class ACameraPawn;
 class ACRPGGameState;
 class UNiagaraSystem;
 class UInputMappingContext;
@@ -52,6 +55,21 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<UInputAction> ToggleInventoryAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CameraRotateAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CameraMoveRightAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CameraMoveForwardAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CameraZoomAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	TObjectPtr<UInputAction> CameraResetAction;
+
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
 
@@ -63,9 +81,15 @@ protected:
 
 	/** Time that the click input has been pressed */
 	float FollowTime = 0.0f;
-	
+
 	UPROPERTY()
 	TObjectPtr<ACRPGGameState> GameState;
+
+	UPROPERTY()
+	TObjectPtr<AUECRPGCharacter> CurCharacter;
+
+	UPROPERTY()
+	TObjectPtr<ACameraPawn> CameraPawn;
 
 public:
 	/** Constructor */
@@ -87,10 +111,20 @@ protected:
 	/** Helper function to get the move destination */
 	void UpdateCachedDestination();
 
+	void OnCameraRotate(const FInputActionInstance& Instance);
+	void OnCameraMoveRight(const FInputActionInstance& Instance);
+	void OnCameraMoveForward(const FInputActionInstance& Instance);
+	void OnCameraZoom(const FInputActionInstance& Instance);
+	void OnCameraReset();
+
+
 	virtual void BeginPlay() override;
-	
+
 public:
 	void DoInputMove();
-	
+
 	void DoSimpleMove();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurCharacter(AUECRPGCharacter* InCharacter);
 };

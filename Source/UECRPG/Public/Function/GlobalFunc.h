@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "CRPGGameState.h"
+#include "UECRPGGameMode.h"
 #include "UECRPGPlayerController.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "GlobalFunc.generated.h"
 
+class AUECRPGGameMode;
 class UGameplayStatics;
 class ACRPGGameState;
 class AUECRPGPlayerController;
@@ -117,18 +119,73 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GlobalFunc")
 	static void SetGameStateType(const EGameStateType Type)
 	{
-		if (const auto GameState = GetGameState() ; IsValid(GameState))
+		if (const auto GameState = GetGameState(); IsValid(GameState))
 		{
 			GameState->SetGameStateType(Type);
 		}
 	}
-	
+
 	static EGameStateType GetGameStateType(EGameStateType& Type)
 	{
-		if (const auto GameState = GetGameState() ; IsValid(GameState))
+		if (const auto GameState = GetGameState(); IsValid(GameState))
 		{
 			return GameState->GetGameStateType();
 		}
 		return EGameStateType::Normal;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "GlobalFunc")
+	static AUECRPGGameMode* GetGameMode()
+	{
+		static TWeakObjectPtr<AUECRPGGameMode> CachedGameMode;
+		if (CachedGameMode.IsValid())
+		{
+			return CachedGameMode.Get();
+		}
+
+		if (!GEngine || !GEngine->GameViewport)
+		{
+			return nullptr;
+		}
+
+		const auto World = GEngine->GameViewport->GetWorld();
+		if (!IsValid(World))
+		{
+			return nullptr;
+		}
+
+		const auto GameMode = Cast<AUECRPGGameMode>(UGameplayStatics::GetGameMode(World));
+		CachedGameMode = GameMode;
+		return GameMode;
+	}
+
+	template <typename TargetClass>
+	static TargetClass* SpawnBPActor(const FString& Folder, const FString& ActorName, const FTransform& Transform)
+	{
+		if (!GEngine || !GEngine->GameViewport)
+		{
+			return nullptr;
+		}
+
+		const auto World = GEngine->GameViewport->GetWorld();
+		if (!IsValid(World))
+		{
+			return nullptr;
+		}
+
+		const FString Path = FString::Printf(
+			TEXT("/Script/Engine.Blueprint'/Game/%s/%s.%s_C'"), *Folder, *ActorName, *ActorName);
+
+		const auto ActorClass = LoadClass<AActor>(nullptr, *Path);
+		if (IsValid(ActorClass))
+		{
+			FActorSpawnParameters SpawnPawns;
+			SpawnPawns.SpawnCollisionHandlingOverride =
+				ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+			return World->SpawnActor<TargetClass>(ActorClass, Transform, SpawnPawns);
+		}
+
+		return nullptr;
 	}
 };
