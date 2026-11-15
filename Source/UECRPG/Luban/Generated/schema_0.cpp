@@ -12,6 +12,33 @@
 namespace cfg {
 
 
+bool Character::CharacterTable::deserialize(::luban::ByteBuf& _buf)
+{
+
+    if(!_buf.readString(id)) return false;
+    if(!Uni::BasicInfo::deserializeBasicInfo(_buf, basicInfo)) return false;
+    if(!_buf.readInt(age)) return false;
+    if(!_buf.readString(story)) return false;
+    {int __enum_temp__; if(!_buf.readInt(__enum_temp__)) return false; faction = Character::Faction(__enum_temp__); }
+
+    return true;
+}
+
+bool Character::CharacterTable::deserializeCharacterTable(::luban::ByteBuf& _buf, ::luban::SharedPtr<Character::CharacterTable>& _out)
+{
+    _out.reset(LUBAN_NEW(Character::CharacterTable));
+    if (_out->deserialize(_buf))
+    {
+        return true;
+    }
+    else
+    { 
+        _out.reset();
+        return false;
+    }
+}
+
+
 bool Item::ItemData::deserialize(::luban::ByteBuf& _buf)
 {
 

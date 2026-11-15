@@ -14,6 +14,7 @@
 #include "Engine/LocalPlayer.h"
 #include "UECRPG.h"
 #include "Camera/CameraPawn.h"
+#include "Character/CharacterBase.h"
 #include "Function/GlobalFunc.h"
 #include "SubState/SubStateBase.h"
 #include "SubSystem/UISystem.h"
@@ -243,7 +244,7 @@ void AUECRPGPlayerController::DoSimpleMove()
 	FollowTime = 0.f;
 }
 
-void AUECRPGPlayerController::SetCurCharacter(AUECRPGCharacter* InCharacter)
+void AUECRPGPlayerController::SetCurCharacter(ACharacterBase* InCharacter)
 {
 	if (IsValid(InCharacter))
 	{

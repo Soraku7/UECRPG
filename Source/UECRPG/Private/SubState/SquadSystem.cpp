@@ -3,14 +3,14 @@
 
 #include "SubState/SquadSystem.h"
 
-#include "UECRPGCharacter.h"
+#include "Character/CharacterBase.h"
 #include "Function/GlobalFunc.h"
 
 void USquadSystem::LoadPlayer()
 {
 	const auto StartPoint = UGlobalFunc::GetGameMode()->FindPlayerStart(UGlobalFunc::GetPlayerController());
-	const auto Player = UGlobalFunc::SpawnBPActor<AUECRPGCharacter>(
-		TEXT("TopDown/Blueprints"), TEXT("BP_TopDownCharacter"),
+	const auto Player = UGlobalFunc::SpawnBPActor<ACharacterBase>(
+		TEXT("Blueprints/Character"), TEXT("BP_Player"),
 		FTransform(StartPoint->GetActorTransform()));
 	UGlobalFunc::GetPlayerController()->SetCurCharacter(Player);
 }

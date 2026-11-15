@@ -15,6 +15,29 @@
 
 namespace cfg {
 
+namespace Character { 
+    /// <summary>
+    /// 角色阵营
+    /// </summary>
+    enum class Faction
+    {
+        /// <summary>
+        /// 玩家
+        /// </summary>
+        Player = 0,
+        /// <summary>
+        /// 敌人
+        /// </summary>
+        Enemy = 1,
+        /// <summary>
+        /// 电脑
+        /// </summary>
+        NPC = 2,
+    };
+
+} 
+
+
 namespace Item { 
     /// <summary>
     /// 物品品质
@@ -85,12 +108,51 @@ namespace Item {
 } 
 
 
+namespace Character { struct CharacterTable; }
 namespace Item { struct ItemData; }
 namespace Item { struct ItemTable; }
 namespace Uni { struct BasicInfo; }
  struct vector2; 
  struct vector3; 
  struct vector4; 
+
+namespace Character {
+
+struct CharacterTable : public luban::CfgBean 
+{
+    static bool deserializeCharacterTable(::luban::ByteBuf& _buf, ::luban::SharedPtr<CharacterTable>& _out);
+
+    virtual ~CharacterTable() {}
+
+    bool deserialize(::luban::ByteBuf& _buf);
+
+    /**
+     * id
+     */
+    ::luban::String id;
+    /**
+     * 名称
+     */
+    ::luban::SharedPtr<Uni::BasicInfo> basicInfo;
+    /**
+     * 年龄
+     */
+    ::luban::int32 age;
+    /**
+     * 故事
+     */
+    ::luban::String story;
+    /**
+     * 阵营
+     */
+    Character::Faction faction;
+
+    static constexpr int __ID__ = 1358600138;
+
+    int getTypeId() const override { return __ID__; }
+};
+
+}
 
 namespace Item {
 
@@ -304,10 +366,54 @@ class TbItem
 
 }
 
+namespace Character {
+
+
+class TbCharacter
+{
+    private:
+    ::luban::HashMap<::luban::String, ::luban::SharedPtr<Character::CharacterTable>> _dataMap;
+    ::luban::Vector<::luban::SharedPtr<Character::CharacterTable>> _dataList;
+    
+    public:
+    bool load(::luban::ByteBuf& _buf)
+    {        
+        int n;
+        if (!_buf.readSize(n)) return false;
+        for(; n > 0 ; --n)
+        {
+            ::luban::SharedPtr<Character::CharacterTable> _v;
+            if(!Character::CharacterTable::deserializeCharacterTable(_buf, _v)) return false;
+            _dataList.push_back(_v);
+            _dataMap[_v->id] = _v;
+        }
+        return true;
+    }
+
+    const ::luban::HashMap<::luban::String, ::luban::SharedPtr<Character::CharacterTable>>& getDataMap() const { return _dataMap; }
+    const ::luban::Vector<::luban::SharedPtr<Character::CharacterTable>>& getDataList() const { return _dataList; }
+
+    Character::CharacterTable* getRaw(::luban::String key)
+    { 
+        auto it = _dataMap.find(key);
+        return it != _dataMap.end() ? it->second.get() : nullptr;
+    }
+
+    ::luban::SharedPtr<Character::CharacterTable> get(::luban::String key)
+    { 
+        auto it = _dataMap.find(key);
+        return it != _dataMap.end() ? it->second : nullptr;
+    }
+
+};
+
+}
+
 class Tables
 {
     public:
      Item::TbItem TbItem;
+     Character::TbCharacter TbCharacter;
 
     bool load(::luban::Loader<::luban::ByteBuf> loader)
     {
@@ -315,6 +421,9 @@ class Tables
         buf.clear();
         if (!loader(buf, "item_tbitem")) return false;
         if (!TbItem.load(buf)) return false;
+        buf.clear();
+        if (!loader(buf, "character_tbcharacter")) return false;
+        if (!TbCharacter.load(buf)) return false;
         return true;
     }
 };

@@ -7,8 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "UECRPGPlayerController.generated.h"
 
+class ACharacterBase;
 struct FInputActionInstance;
-class AUECRPGCharacter;
 class ACameraPawn;
 class ACRPGGameState;
 class UNiagaraSystem;
@@ -86,7 +86,7 @@ protected:
 	TObjectPtr<ACRPGGameState> GameState;
 
 	UPROPERTY()
-	TObjectPtr<AUECRPGCharacter> CurCharacter;
+	TObjectPtr<ACharacterBase> CurCharacter;
 
 	UPROPERTY()
 	TObjectPtr<ACameraPawn> CameraPawn;
@@ -126,5 +126,5 @@ public:
 	void DoSimpleMove();
 
 	UFUNCTION(BlueprintCallable)
-	void SetCurCharacter(AUECRPGCharacter* InCharacter);
+	void SetCurCharacter(ACharacterBase* InCharacter);
 };

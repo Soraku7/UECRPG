@@ -28,4 +28,9 @@ public:
 	{
 		return GlobalTables.TbItem.get(ItemID);
 	}
+
+	FORCEINLINE luban::SharedPtr<cfg::Character::CharacterTable> GetTbCharacterData(const FString& CharacterID)
+	{
+		return GlobalTables.TbCharacter.get(TCHAR_TO_UTF8(*CharacterID));
+	}
 };

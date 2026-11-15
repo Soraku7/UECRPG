@@ -37,3 +37,12 @@ enum class EGameStateType : uint8
 	AIBattle UMETA(DisplayName = "AIBattle"),
 	BattleEnd UMETA(DisplayName = "Battle End"),
 };
+
+UENUM(BlueprintType)
+enum class EFactionType:uint8
+{
+	Player UMETA(DisplayName = "Player"),
+	Enemy UMETA(DisplayName = "Enemy"),
+	NPC UMETA(DisplayName = "NPC"),
+	Null UMETA(DisplayName = "Null"),
+};
