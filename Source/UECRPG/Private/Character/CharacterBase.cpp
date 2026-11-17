@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Function/GlobalFunc.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS/Attribute/BasicAttributeSet.h"
 #include "SubSystem/DataSystem.h"
 
 
@@ -31,6 +32,8 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterHandleComponent = CreateDefaultSubobject<UAttributeHandleComponent>(TEXT("CharacterHandleComponent"));
+
+	BasicAttribute = CreateDefaultSubobject<UBasicAttributeSet>(TEXT("BasicAttribute"));
 }
 
 // Called when the game starts or when spawned
@@ -69,4 +72,9 @@ void ACharacterBase::Tick(float DeltaTime)
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
+{
+	return nullptr;
 }

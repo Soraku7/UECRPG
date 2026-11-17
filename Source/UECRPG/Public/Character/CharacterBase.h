@@ -3,16 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "Data/CharacterDataStruct.h"
 #include "Data/GlobalEnum.h"
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
+class UBasicAttributeSet;
 class UAttributeHandleComponent;
 enum class EFactionType : uint8;
 
 UCLASS()
-class UECRPG_API ACharacterBase : public ACharacter
+class UECRPG_API ACharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -29,14 +31,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config", DisplayName = "Character InfoData")
 	FCharacterInfoData CharacterInfoData;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAttributeHandleComponent> CharacterHandleComponent;
+
+	TObjectPtr<UBasicAttributeSet> BasicAttribute;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void InitializeData();
 
@@ -46,4 +50,15 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FString GetCharacterID() const { return CharacterID; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE EFactionType GetFaction() const { return Faction; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UAttributeHandleComponent* GetCharacterHandleComponent() const { return CharacterHandleComponent; }
 };

@@ -108,6 +108,7 @@ namespace Item {
 } 
 
 
+namespace Attr { struct Basic; }
 namespace Character { struct CharacterTable; }
 namespace Item { struct ItemData; }
 namespace Item { struct ItemTable; }
@@ -115,6 +116,40 @@ namespace Uni { struct BasicInfo; }
  struct vector2; 
  struct vector3; 
  struct vector4; 
+
+namespace Attr {
+
+struct Basic : public luban::CfgBean 
+{
+    static bool deserializeBasic(::luban::ByteBuf& _buf, ::luban::SharedPtr<Basic>& _out);
+
+    virtual ~Basic() {}
+
+    bool deserialize(::luban::ByteBuf& _buf);
+
+    /**
+     * 血量
+     */
+    ::luban::float32 hp;
+    /**
+     * 护甲
+     */
+    ::luban::float32 arp;
+    /**
+     * 行动点
+     */
+    ::luban::float32 ap;
+    /**
+     * 移动点
+     */
+    ::luban::float32 mp;
+
+    static constexpr int __ID__ = 679841265;
+
+    int getTypeId() const override { return __ID__; }
+};
+
+}
 
 namespace Character {
 
@@ -146,6 +181,10 @@ struct CharacterTable : public luban::CfgBean
      * 阵营
      */
     Character::Faction faction;
+    /**
+     * 血量
+     */
+    ::luban::SharedPtr<Attr::Basic> initAttrBasic;
 
     static constexpr int __ID__ = 1358600138;
 

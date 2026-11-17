@@ -12,6 +12,32 @@
 namespace cfg {
 
 
+bool Attr::Basic::deserialize(::luban::ByteBuf& _buf)
+{
+
+    if(!_buf.readFloat(hp)) return false;
+    if(!_buf.readFloat(arp)) return false;
+    if(!_buf.readFloat(ap)) return false;
+    if(!_buf.readFloat(mp)) return false;
+
+    return true;
+}
+
+bool Attr::Basic::deserializeBasic(::luban::ByteBuf& _buf, ::luban::SharedPtr<Attr::Basic>& _out)
+{
+    _out.reset(LUBAN_NEW(Attr::Basic));
+    if (_out->deserialize(_buf))
+    {
+        return true;
+    }
+    else
+    { 
+        _out.reset();
+        return false;
+    }
+}
+
+
 bool Character::CharacterTable::deserialize(::luban::ByteBuf& _buf)
 {
 
@@ -20,6 +46,7 @@ bool Character::CharacterTable::deserialize(::luban::ByteBuf& _buf)
     if(!_buf.readInt(age)) return false;
     if(!_buf.readString(story)) return false;
     {int __enum_temp__; if(!_buf.readInt(__enum_temp__)) return false; faction = Character::Faction(__enum_temp__); }
+    if(!Attr::Basic::deserializeBasic(_buf, initAttrBasic)) return false;
 
     return true;
 }
