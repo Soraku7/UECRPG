@@ -4,6 +4,8 @@
 #include "Character/Component/AttributeHandleComponent.h"
 
 #include "Character/CharacterBase.h"
+#include "Character/Component/AbilityComponent.h"
+#include "GAS/Attribute/BasicAttributeSet.h"
 
 
 // Sets default values for this component's properties
@@ -39,6 +41,7 @@ void UAttributeHandleComponent::DoInitialize()
 {
 	Owner = Cast<ACharacterBase>(GetOwner());
 	UE_LOG(LogTemp, Warning, TEXT("UAttributeHandleComponent::DoInitialize()"));
+	BindAttributeDelegates();
 }
 
 void UAttributeHandleComponent::DoReset()
@@ -48,10 +51,45 @@ void UAttributeHandleComponent::DoReset()
 
 void UAttributeHandleComponent::DoDispose()
 {
-	IUnitComponentInterface::DoDispose();
+	ClearAttributeDelegates();
 }
 
 ACharacterBase* UAttributeHandleComponent::GetCompOwner() const
 {
 	return Owner;
+}
+
+void UAttributeHandleComponent::BindAttributeDelegates()
+{
+	GetWorld()->GetTimerManager().SetTimerForNextTick([&]()
+	{
+		Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetHealthAttribute()).
+		       AddUObject(this, &UAttributeHandleComponent::OnBasicAttributeChange);
+		Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetArmorAttribute()).
+		       AddUObject(this, &UAttributeHandleComponent::OnBasicAttributeChange);
+		Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetAPAttribute()).
+		       AddUObject(this, &UAttributeHandleComponent::OnBasicAttributeChange);
+		Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetMPAttribute()).
+		       AddUObject(this, &UAttributeHandleComponent::OnBasicAttributeChange);
+	});
+}
+
+void UAttributeHandleComponent::ClearAttributeDelegates()
+{
+	Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetHealthAttribute()).
+	       Clear();
+	Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetArmorAttribute()).
+	       Clear();
+	Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetAPAttribute()).
+	       Clear();
+	Owner->GetAbilityComponent()->GetGameplayAttributeValueChangeDelegate(UBasicAttributeSet::GetMPAttribute()).
+	       Clear();
+}
+
+void UAttributeHandleComponent::OnBasicAttributeChange(const FOnAttributeChangeData& Data)
+{
+	if (OnAttributeChangeDelegate.IsBound())
+	{
+		OnAttributeChangeDelegate.Broadcast();
+	}
 }

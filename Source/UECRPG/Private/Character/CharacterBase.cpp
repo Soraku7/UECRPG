@@ -3,6 +3,7 @@
 
 #include "Character/CharacterBase.h"
 
+#include "Character/Component/AbilityComponent.h"
 #include "Character/Component/AttributeHandleComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Function/GlobalFunc.h"
@@ -32,6 +33,7 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CharacterHandleComponent = CreateDefaultSubobject<UAttributeHandleComponent>(TEXT("CharacterHandleComponent"));
+	AbilityComponent = CreateDefaultSubobject<UAbilityComponent>(TEXT("AbilityComponent"));
 
 	BasicAttribute = CreateDefaultSubobject<UBasicAttributeSet>(TEXT("BasicAttribute"));
 }
@@ -52,6 +54,12 @@ void ACharacterBase::InitializeData_Implementation()
 	{
 		CharacterInfoData = FCharacterInfoData(TbCharacter);
 		Faction = static_cast<EFactionType>(TbCharacter->faction);
+	}
+
+	for (UAttributeSet* UAttributeSet : GetAbilityComponent()->GetSpawnedAttributes())
+	{
+		const auto AttrSet = Cast<UAttributeSetBase>(UAttributeSet);
+		AttrSet->DoInitialize();
 	}
 
 	const auto UnitComponents = GetComponentsByInterface(UUnitComponentInterface::StaticClass());
@@ -76,5 +84,5 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
 {
-	return nullptr;
+	return AbilityComponent;
 }

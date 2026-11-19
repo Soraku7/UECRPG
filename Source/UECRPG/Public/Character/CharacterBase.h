@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "CharacterBase.generated.h"
 
+class UAbilityComponent;
 class UBasicAttributeSet;
 class UAttributeHandleComponent;
 enum class EFactionType : uint8;
@@ -35,6 +36,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAttributeHandleComponent> CharacterHandleComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UAbilityComponent> AbilityComponent;
+
+	UPROPERTY()
 	TObjectPtr<UBasicAttributeSet> BasicAttribute;
 
 protected:
@@ -61,4 +66,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE UAttributeHandleComponent* GetCharacterHandleComponent() const { return CharacterHandleComponent; }
+	
+	FORCEINLINE UAbilityComponent* GetAbilityComponent() const { return AbilityComponent; }
 };

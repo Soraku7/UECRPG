@@ -7,6 +7,8 @@
 #include "Interfaces/UnitComponentInterface.h"
 #include "AttributeHandleComponent.generated.h"
 
+struct FOnAttributeChangeData;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttributeChangeSignature);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UECRPG_API UAttributeHandleComponent : public UActorComponent, public IUnitComponentInterface
@@ -26,6 +28,10 @@ protected:
 	TObjectPtr<ACharacterBase> Owner;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FAttributeChangeSignature OnAttributeChangeDelegate;
+
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
@@ -37,4 +43,11 @@ public:
 	virtual void DoDispose() override;
 
 	virtual ACharacterBase* GetCompOwner() const override;
+
+protected:
+	void BindAttributeDelegates();
+
+	void ClearAttributeDelegates();
+
+	void OnBasicAttributeChange(const FOnAttributeChangeData& Data);
 };

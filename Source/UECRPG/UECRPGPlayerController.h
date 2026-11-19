@@ -117,7 +117,6 @@ protected:
 	void OnCameraZoom(const FInputActionInstance& Instance);
 	void OnCameraReset();
 
-
 	virtual void BeginPlay() override;
 
 public:
@@ -127,4 +126,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurCharacter(ACharacterBase* InCharacter);
+
+	UFUNCTION()
+	FORCEINLINE ACharacterBase* GetCurCharacter() { return CurCharacter; }
 };

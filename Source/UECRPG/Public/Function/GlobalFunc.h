@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "CRPGGameState.h"
+#include "UECRPGCharacter.h"
 #include "UECRPGGameMode.h"
 #include "UECRPGPlayerController.h"
+#include "Character/CharacterBase.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "GlobalFunc.generated.h"
@@ -187,5 +189,11 @@ public:
 		}
 
 		return nullptr;
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "GlobalFunc")
+	static ACharacterBase* GetPlayer()
+	{
+		return GetPlayerController()->GetCurCharacter();
 	}
 };
